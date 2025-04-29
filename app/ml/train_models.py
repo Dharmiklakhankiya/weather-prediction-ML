@@ -9,28 +9,22 @@ import xgboost as xgb
 import catboost as cb
 from app.utils.preprocess import prepare_data_for_training, TARGET_FEATURES
 
-# --- Configuration ---
 CITIES = ["ahmedabad", "mumbai", "delhi", "bengaluru"]
-LAG_FEATURES = 24 # Number of past hours to use as features
+LAG_FEATURES = 24
 MODELS_DIR = os.path.join(os.path.dirname(__file__), '..', 'models')
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 
-# Ensure models directory exists
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-# --- Model Definitions ---
-# Using MultiOutputRegressor for models that don't natively support multi-output
 models_config = {
     "LightGBM": MultiOutputRegressor(lgb.LGBMRegressor(random_state=42)),
-    "CatBoost": MultiOutputRegressor(cb.CatBoostRegressor(random_state=42, verbose=0)), # verbose=0 to silence CatBoost
-    "ExtraTrees": ExtraTreesRegressor(random_state=42, n_estimators=100), # Natively supports multi-output
+    "CatBoost": MultiOutputRegressor(cb.CatBoostRegressor(random_state=42, verbose=0)),
+    "ExtraTrees": ExtraTreesRegressor(random_state=42, n_estimators=100),
     "XGBoost": MultiOutputRegressor(xgb.XGBRegressor(random_state=42, objective='reg:squarederror')),
     "HistGradientBoosting": MultiOutputRegressor(HistGradientBoostingRegressor(random_state=42))
 }
 
-# --- Training Loop ---
 def train_all_models():
-    """Trains all models for all cities and saves them."""
     for city in CITIES:
         print(f"\n--- Processing City: {city.title()} ---")
         city_file = os.path.join(DATA_DIR, f"{city}.csv")
@@ -49,10 +43,8 @@ def train_all_models():
             for model_name, model in models_config.items():
                 print(f"Training {model_name} for {city}...")
                 try:
-                    # Fit the model
                     model.fit(X, y)
 
-                    # Save the model
                     model_filename = os.path.join(MODELS_DIR, f"{city}_{model_name}.pkl")
                     joblib.dump(model, model_filename)
                     print(f"✅ Saved {model_name} model for {city} to {model_filename}")

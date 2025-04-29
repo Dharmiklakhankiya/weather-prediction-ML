@@ -6,36 +6,30 @@ const forecastTypeSelect = document.getElementById('forecast_type');
 const dayOfWeekGroup = document.getElementById('day-of-week-group');
 const dayOfWeekSelect = document.getElementById('day_of_week');
 
-// --- API Base URL ---
-// Adjust if your FastAPI runs on a different port
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
-// --- Event Listeners ---
 forecastTypeSelect.addEventListener('change', () => {
     if (forecastTypeSelect.value === '1week') {
         dayOfWeekGroup.style.display = 'block';
     } else {
         dayOfWeekGroup.style.display = 'none';
-        dayOfWeekSelect.value = ''; // Reset day selection
+        dayOfWeekSelect.value = '';
     }
 });
 
 form.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Clear previous results and errors
     resultsDiv.innerHTML = '';
     errorMessageDiv.style.display = 'none';
     errorMessageDiv.textContent = '';
-    loadingDiv.style.display = 'block'; // Show loading indicator
+    loadingDiv.style.display = 'block';
 
-    // Get form data
     const city = document.getElementById('city').value;
     const model_name = document.getElementById('model_name').value;
     const forecast_type = forecastTypeSelect.value;
     const day_of_week = dayOfWeekSelect.value;
 
-    // Construct API URL
     const params = new URLSearchParams({
         city: city,
         model_name: model_name,
@@ -48,7 +42,7 @@ form.addEventListener('submit', async (event) => {
 
     const apiUrl = `${API_BASE_URL}/predict?${params.toString()}`;
 
-    console.log(`Fetching: ${apiUrl}`); // Log the URL for debugging
+    console.log(`Fetching: ${apiUrl}`);
 
     try {
         const response = await fetch(apiUrl);
@@ -59,7 +53,6 @@ form.addEventListener('submit', async (event) => {
                 const errorData = await response.json();
                 errorMsg = `Error ${response.status}: ${errorData.detail || response.statusText}`;
             } catch (e) {
-                // Ignore if response is not JSON
             }
             throw new Error(errorMsg);
         }
@@ -77,27 +70,21 @@ form.addEventListener('submit', async (event) => {
         errorMessageDiv.textContent = `Failed to fetch forecast: ${error.message}`;
         errorMessageDiv.style.display = 'block';
     } finally {
-        loadingDiv.style.display = 'none'; // Hide loading indicator
+        loadingDiv.style.display = 'none';
     }
 });
 
-// --- Rendering Function ---
 function renderResults(data) {
-    // Assuming data is an array of objects like:
-    // { "Timestamp": "...", "Temperature (°C)": ..., ... }
-
     if (!data || data.length === 0) {
         resultsDiv.innerHTML = '<p>No forecast data received.</p>';
         return;
     }
 
-    // Create table structure
     const table = document.createElement('table');
     const thead = document.createElement('thead');
     const tbody = document.createElement('tbody');
     const headerRow = document.createElement('tr');
 
-    // Get headers from the first data object keys
     const headers = Object.keys(data[0]);
     headers.forEach(headerText => {
         const th = document.createElement('th');
@@ -106,12 +93,10 @@ function renderResults(data) {
     });
     thead.appendChild(headerRow);
 
-    // Populate table body
     data.forEach(rowData => {
         const row = document.createElement('tr');
         headers.forEach(header => {
             const td = document.createElement('td');
-            // Format timestamp or numbers if needed, here just display
             td.textContent = rowData[header];
             row.appendChild(td);
         });
