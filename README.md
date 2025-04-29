@@ -10,7 +10,7 @@ Follow these steps to run the application:
 2. **Fetch/Update Data (If Necessary):**  
    Ensure the latest CSV data files (e.g., `ahmedabad.csv`) are in the `app/data/` directory. If needed, run the script to fetch data:
     ```bash
-    python path/to/data.py
+    python "app\data\data.py"
     ```
 
 3. **Train Models (Required):**  
