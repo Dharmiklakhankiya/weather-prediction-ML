@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pandas
+scikit-learn
+xgboost
+lightgbm
+catboost
+joblib
+numpy
+python-dotenv # Good practice for managing paths/configs if needed later
